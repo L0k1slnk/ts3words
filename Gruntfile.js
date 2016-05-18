@@ -27,8 +27,14 @@ module.exports = function (grunt) {
         concat: {
             scripts: {
                 files: {
-                    'release/scripts/main.js': [
-                        'source/scripts/main.js'
+                    'release/scripts/background.js': [
+                        'source/scripts/background.js'
+                    ],
+                    'release/scripts/content.js': [
+                        'source/scripts/content.js'
+                    ],
+                    'release/scripts/browser.js': [
+                        'source/scripts/browser.js'
                     ]
                 }
             }
