@@ -1,0 +1,20 @@
+{
+  "name": "ts3words",
+  "version": "0.0.1",
+  "description": "",
+  "main": "Gruntfile.js",
+  "author": "L0k1",
+  "devDependencies": {
+    "autoprefixer": "*",
+    "cssnano": "*",
+    "cssnext": "*",
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-sass": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-newer": "*",
+    "grunt-postcss": "*"
+  }
+}
