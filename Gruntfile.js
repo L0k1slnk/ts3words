@@ -31,10 +31,14 @@ module.exports = function (grunt) {
                         'source/scripts/background.js'
                     ],
                     'release/scripts/content.js': [
+                        'source/scripts/vendor/jquery.js',
                         'source/scripts/content.js'
                     ],
                     'release/scripts/browser.js': [
                         'source/scripts/browser.js'
+                    ],
+                    'release/scripts/tabs.js': [
+                        'source/scripts/tabs.js'
                     ]
                 }
             }

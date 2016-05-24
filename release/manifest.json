@@ -9,9 +9,24 @@
     "48": "images/icon48.png"
   },
 
-  "author": "L0k1",
+  "author": "L0k1",  "browser_action": {
+  "name": "Click me"
+},
   "background": {
-    "persistent": false,
-    "scripts": ["scripts/background.js"]
-  }
+    "scripts": [
+      "scripts/background.js",
+      "scripts/tabs.js"
+    ],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["styles/style.css"],
+      "js": ["scripts/content.js"]
+    }
+  ],
+  "web_accessible_resources": ["content.html"],
+  "permissions":["tabs","<all_urls>"]
 }

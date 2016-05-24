@@ -1,3 +1,7 @@
-/**
- * Created by l0k1 on 19.05.16.
- */
+$(function () {
+   debugger
+   $.get(chrome.extension.getURL('content.html'), function (data) {
+      $(data).appendTo('body');
+   });
+
+});
