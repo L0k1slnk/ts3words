@@ -5,8 +5,8 @@
 
   "description": "Words learning app",
   "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png"
+    "16": "images/icon16_inactive.png",
+    "48": "images/icon48_inactive.png"
   },
 
   "author": "L0k1",  "browser_action": {
@@ -14,8 +14,7 @@
 },
   "background": {
     "scripts": [
-      "scripts/background.js",
-      "scripts/tabs.js"
+      "scripts/background.js"
     ],
     "persistent": false
   },

@@ -28,7 +28,8 @@ module.exports = function (grunt) {
             scripts: {
                 files: {
                     'release/scripts/background.js': [
-                        'source/scripts/background.js'
+                        'source/scripts/background.js',
+                        'source/scripts/tabs.js'
                     ],
                     'release/scripts/content.js': [
                         'source/scripts/vendor/jquery.js',
@@ -36,9 +37,6 @@ module.exports = function (grunt) {
                     ],
                     'release/scripts/browser.js': [
                         'source/scripts/browser.js'
-                    ],
-                    'release/scripts/tabs.js': [
-                        'source/scripts/tabs.js'
                     ]
                 }
             }
