@@ -1,9 +1,32 @@
 ts3w {
+  display: block;
+  box-sizing: border-box;
+}
+
+.__ts3w-control-panel {
   position: fixed;
-  z-index: 10000;
-  width: 300px;
-  height: 300px;
-  background: palevioletred;
-  top: 200px;
-  left: 300px;
+  width: $s_defaultWidth;
+  height: $s_defaultHeight;
+  background: $c_main;
+  top: $s_browserPadding;
+  right: $s_browserPadding;
+  z-index: 99999;
+  transition: opacity .3s;
+  opacity: .4;
+  overflow: hidden;
+  border-radius: $s_borderRadius $s_borderRadius 0 0;
+
+  &:hover,
+  &:focus,
+  &:active {
+    opacity: 1;
+  }
+
+  &__header {
+    cursor: move;
+    background: darken($c_main, 20%);
+    text-align: center;
+    font-size: 16px;
+    line-height: 2;
+  }
 }

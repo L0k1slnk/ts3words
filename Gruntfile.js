@@ -17,7 +17,9 @@ module.exports = function (grunt) {
                     require('autoprefixer')({
                         browsers: ['> 1%']
                     }),
-                    require('cssnano')()
+                    require('cssnano')({
+                        zindex: false
+                    })
                 ]
             },
             dist: {
@@ -33,6 +35,7 @@ module.exports = function (grunt) {
                     ],
                     'release/scripts/content.js': [
                         'source/scripts/vendor/jquery.js',
+                        'source/scripts/vendor/jquery-ui.js',
                         'source/scripts/content.js'
                     ],
                     'release/scripts/browser.js': [
