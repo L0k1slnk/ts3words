@@ -5,6 +5,7 @@ $(function () {
         if (response) {
             $.get(chrome.extension.getURL('../content.html'), function (data) {
                 $(data).appendTo('body');
+                $('.__ts3w-control-panel__counter').html(response.counter);
                 addPanelAppereance($(controlPanelId));
             });
         }
@@ -14,8 +15,7 @@ $(function () {
 // update info on activate tab
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message === "tab activated") {
-        var $controlPanel = $(controlPanelId);
-        $controlPanel.text(request.counter);
+        $('.__ts3w-control-panel__counter').html(request.counter);
     }
 });
 
