@@ -17,9 +17,9 @@ module.exports = function (grunt) {
                     require('autoprefixer')({
                         browsers: ['> 1%']
                     }),
-                    require('cssnano')({
-                        zindex: false
-                    })
+                    // require('cssnano')({
+                    //     zindex: false
+                    // })
                 ]
             },
             dist: {

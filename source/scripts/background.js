@@ -1,6 +1,7 @@
 function Ts3Words() {
     this.active = false;
     this.counter = 0;
+    this.panelCollapsed = false;
 }
 
 var ts3Words = new Ts3Words();
@@ -42,7 +43,7 @@ function removeListeners() {
 }
 
 function tabListener(activeInfo) {
-    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", counter: ts3Words.counter});
+    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words});
     ts3Words.counter++;
     console.log('3 words activat tab');
 }
@@ -50,7 +51,7 @@ function tabListener(activeInfo) {
 function domListener(request, sender, sendResponse) {
     console.log(request);
     if (request.message === "domready") {
-        sendResponse({counter: ts3Words.counter});
+        sendResponse({ts3Words: ts3Words});
         ts3Words.counter++;
     }
 }
