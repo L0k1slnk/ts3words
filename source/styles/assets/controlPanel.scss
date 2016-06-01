@@ -41,6 +41,12 @@ ts3w {
 
   &--collapsed {
     border-radius: $s_borderRadius;
+    .__ts3w-control-panel__header-title--collapsed {
+      display: block;
+    }
+    .__ts3w-control-panel__header-title--default {
+      display: none;
+    }
   }
 
   &:hover,
@@ -52,9 +58,13 @@ ts3w {
   &__header {
     cursor: move;
     background: darken($c_main, 20%);
-    font-size: 16px;
-    line-height: 2;
-    padding: 0 $s_space;
+    &-title {
+      font-size: 16px;
+      padding: $s_space/2 $s_space;
+      &--collapsed {
+        display: none;
+      }
+    }
   }
 
   &__body {

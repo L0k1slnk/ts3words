@@ -1,7 +1,6 @@
 var controlPanelId = '#__ts3w-control-panel';
 var ts3Words = {};
 
-$(function () {
     chrome.runtime.sendMessage({message: "domready"}, function (response) {
         if (response) {
             $.get(chrome.extension.getURL('../content.html'), function (data) {
@@ -14,13 +13,11 @@ $(function () {
             });
         }
     });
-}); //Dom ready
-
 // update info on activate tab
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.message === "tab activated") {
         $('.__ts3w-control-panel__counter').html(request.ts3Words.counter);
-        ts3Words = response.ts3Words;
+        ts3Words = request.ts3Words;
         $(controlPanelId).removeClass('__ts3w-control-panel--processing');
     }
 });
@@ -29,7 +26,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 function addPanelAppereance($controlPanel) {
     $controlPanel.draggable({
         addClasses: false,
-        handle: '.__ts3w-control-panel__header'
+        handle: '.__ts3w-control-panel__header',
+        containment: "window",
+        scroll: false
     });
 }
 
