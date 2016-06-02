@@ -1,12 +1,20 @@
 chrome.manifest = chrome.app.getDetails();
+// var scripts = chrome.manifest.content_scripts[0].js;
+// var styles = chrome.manifest.content_scripts[0].css;
 
-function Ts3Words() {
-    this.active = false;
-    this.counter = 0;
-    this.panelCollapsed = false;
+var ts3Words = {
+    active: true,
+    counter: 0,
+    panel: {
+        collapsed: false,
+        position: {
+            top: '30px',
+            bottom: 'auto',
+            left: 'auto',
+            right: '30px'
+        }
+    }
 }
-var ts3Words = new Ts3Words();
-
 
 function updateStatus() {
     ts3Words.active = !ts3Words.active;
@@ -16,35 +24,54 @@ function updateStatus() {
     else {
         turnOff();
     }
-
 }
+
+turnOn();
 
 chrome.browserAction.onClicked.addListener(function () {
     updateStatus();
 });
 
+// chrome.management.onDisabled.addListener(function(ExtensionInfo) { // TROLOLOLO need a second extension to monitor this MUHAHHAHAHA
+//     alert('disable');
+//     turnOff();
+// });
+//
+// chrome.management.onEnabled.addListener(function(ExtensionInfo) {
+//     alert('enable');
+//     turnOn();
+// });
+
+
+// loadContentScriptInAllTabs(injectIntoTab);
+
+
+
 function turnOn() {
-    // on activate tab (if tab loaded after runing ext)
     chrome.browserAction.setBadgeText({text: "ON"});
     chrome.browserAction.setIcon({path: "images/icon16.png"});
-    chrome.tabs.onActivated.addListener(tabListener);
-    // from content on Dom Ready
+    // chrome.tabs.onActivated.addListener(tabListener);
     chrome.runtime.onMessage.addListener(domListener);
+    loadContentScriptInAllTabs(injectIntoTab);
+    // loadContentScriptInAllTabs(showPanels);
+
     console.log('turnOn()');
-    // loadContentScriptInAllTabs();
 }
 
 function turnOff() {
     chrome.browserAction.setBadgeText({text: ""});
     chrome.browserAction.setIcon({path: "images/icon16_inactive.png"});
-    chrome.tabs.onActivated.removeListener(tabListener);
+    // chrome.tabs.onActivated.removeListener(tabListener);
     chrome.runtime.onMessage.removeListener(domListener);
+    loadContentScriptInAllTabs(hidePanels);
+    console.log('turnOff()');
 }
+
 
 function tabListener(activeInfo) {
     chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words});
     ts3Words.counter++;
-    console.log('3 words activat tab');
+    console.log('activate tab');
 }
 
 function domListener(request, sender, sendResponse) {
@@ -55,38 +82,40 @@ function domListener(request, sender, sendResponse) {
     }
 }
 
-function loadContentScriptInAllTabs() {
+function loadContentScriptInAllTabs(callback, params) {
     chrome.windows.getAll({'populate': true}, function (windows) {
         for (var i = 0; i < windows.length; i++) {
             var tabs = windows[i].tabs;
             var currentWindow = windows[i];
             for (var j = 0; j < tabs.length; j++) {
                 var currentTab = currentWindow.tabs[j];
-                injectIntoTab(currentTab);
-                // Skip chrome:// and https:// pages
-                if (!currentTab.url.match(/(chrome|https):\/\//gi)) {
-                    // injectIntoTab(currentTab);
-                    // chrome.tabs.executeScript(currentTab.id, {
-                    //     code: 'document.body.style.backgroundColor="red"'
-                    // });
+                if (!currentTab.url.match(/(chrome):\/\//gi)) {
+                    callback(currentTab, params);
                 }
             }
         }
     });
 }
-var injectIntoTab = function (tab) {
-    var scripts = chrome.manifest.content_scripts[0].js;
-    var styles = chrome.manifest.content_scripts[0].css;
-    // var i = 0, s = scripts.length;
-    // for( ; i < s; i++ ) {
+function injectIntoTab(tab) {
     chrome.tabs.executeScript(tab.id, {
-        file: scripts[0],
-        allFrames: true,
+        file: "scripts/content.js",
         runAt: "document_end"
-
     });
     chrome.tabs.insertCSS(tab.id, {
-        file: styles[0]
+        file: "styles/style.css"
     });
-    // }
+
+    console.log('inject into ' + tab.id + ' tab');
+
+}
+
+function hidePanels(tab) {
+    chrome.tabs.executeScript(tab.id, {
+        code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.remove(); /*panel.style.display = 'none';*/"
+    });
+}
+function showPanels(tab) {
+    chrome.tabs.executeScript(tab.id, {
+        code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.style.display = 'block';"
+    });
 }

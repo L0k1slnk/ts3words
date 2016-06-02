@@ -23,9 +23,11 @@
     {
       "matches": ["<all_urls>"],
       "css": ["styles/style.css"],
-      "js": ["scripts/content.js"]
+      "js": ["scripts/content.js"],
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
   "web_accessible_resources": ["content.html"],
-  "permissions":["tabs","<all_urls>"]
+  "permissions":["tabs","<all_urls>", "management"]
 }
