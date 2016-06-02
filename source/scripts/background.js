@@ -6,7 +6,7 @@ var ts3Words = {
     active: true,
     counter: 0,
     panel: {
-        collapsed: false,
+        state: 'default', // 'default', 'collapsed', 'stuckTop', 'stuckBottom', 'stuckLeft', 'stuckRight'
         position: {
             top: '30px',
             bottom: 'auto',

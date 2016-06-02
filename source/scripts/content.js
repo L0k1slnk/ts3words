@@ -10,7 +10,7 @@ chrome.runtime.sendMessage({message: "domready"}, function (response) {
             $(tmpl).appendTo('body');
             addPanelAppereance($(controlPanelId));
             $('.__ts3w-control-panel__counter').html(response.ts3Words.counter);
-
+            $(controlPanelId).addClass('__ts3w-control-panel--' + ts3Words.state);
             $(controlPanelId).removeClass('__ts3w-control-panel--processing');
         }
 
