@@ -63,7 +63,7 @@ function turnOff() {
     chrome.browserAction.setIcon({path: "images/icon16_inactive.png"});
     // chrome.tabs.onActivated.removeListener(tabListener);
     chrome.runtime.onMessage.removeListener(domListener);
-    loadContentScriptInAllTabs(hidePanels);
+    loadContentScriptInAllTabs(removePanels);
     console.log('turnOff()');
 }
 
@@ -109,13 +109,13 @@ function injectIntoTab(tab) {
 
 }
 
-function hidePanels(tab) {
+function removePanels(tab) {
     chrome.tabs.executeScript(tab.id, {
-        code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.remove(); /*panel.style.display = 'none';*/"
+        code: "var panel = document.getElementById('__ts3w-control-panel'); if(panel) panel.remove();"
     });
 }
-function showPanels(tab) {
-    chrome.tabs.executeScript(tab.id, {
-        code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.style.display = 'block';"
-    });
-}
+// function showPanels(tab) {
+//     chrome.tabs.executeScript(tab.id, {
+//         code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.style.display = 'block';"
+//     });
+// }
