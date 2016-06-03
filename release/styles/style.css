@@ -3320,6 +3320,7 @@ ts3w {
   opacity: .6;
   overflow: hidden;
   border-radius: 10px 10px 0 0;
+  z-index: 9999999990000;
 }
 .__ts3w-control-panel--processing .__ts3w-control-panel__body {
   pointer-events: none;
@@ -3346,6 +3347,9 @@ ts3w {
   display: block;
 }
 .__ts3w-control-panel--collapsed .__ts3w-control-panel__header-title--default {
+  display: none;
+}
+.__ts3w-control-panel--collapsed .__ts3w-control-panel__body {
   display: none;
 }
 .__ts3w-control-panel:hover, .__ts3w-control-panel:focus, .__ts3w-control-panel:active {

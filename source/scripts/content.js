@@ -54,7 +54,19 @@ function addPanelAppereance($controlPanel) {
         addClasses: false,
         handle: '.__ts3w-control-panel__header',
         containment: "window",
-        scroll: false
+        scroll: false,
+        drag: function (event, ui) {
+            // console.log(ui);
+        },
+        stop: function (event, ui) {
+            ts3Words.panel.position = {
+                top: ui.position.top + 'px',
+                bottom: 'auto',
+                left: ui.position.left + 'px',
+                right: 'auto'
+            }
+            localStorage.setItem('ts3w', JSON.stringify(ts3Words));
+        }
     });
 
     /*****************************************
