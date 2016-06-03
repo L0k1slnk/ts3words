@@ -24,7 +24,7 @@ chrome.runtime.sendMessage({message: "domready"}, function (response) {
 
             addPanelAppereance($(controlPanelId));
             $('.__ts3w-control-panel__counter').html(response.ts3Words.counter);
-            $(controlPanelId).addClass('__ts3w-control-panel--' + ts3Words.state);
+            $(controlPanelId).addClass('__ts3w-control-panel--' + ts3Words.panel.state);
             $(controlPanelId).removeClass('__ts3w-control-panel--processing');
         }
 
@@ -77,16 +77,18 @@ function addPanelAppereance($controlPanel) {
 
     $('.__ts3w-control-panel__header').off('dblclick.ts3wCollapse').on('dblclick.ts3wCollapse', function (e) {
         if (ts3Words.panelCollapsed) {
-            $('.__ts3w-control-panel__body').slideDown(100, function () {
-                $(controlPanelId).removeClass('__ts3w-control-panel--collapsed');
-            });
+            $(controlPanelId).removeClass('__ts3w-control-panel--collapsed');
+            // $('.__ts3w-control-panel__body').slideDown(100, function () {
+            //     $(controlPanelId).removeClass('__ts3w-control-panel--collapsed');
+            // });
 
             ts3Words.panel.state = "default";
         }
         else {
-            $('.__ts3w-control-panel__body').slideUp(100, function () {
-                $(controlPanelId).addClass('__ts3w-control-panel--collapsed');
-            });
+            // $('.__ts3w-control-panel__body').slideUp(100, function () {
+            //     $(controlPanelId).addClass('__ts3w-control-panel--collapsed');
+            // });
+            $(controlPanelId).addClass('__ts3w-control-panel--collapsed');
             ts3Words.panel.state = "collapsed";
         }
         ts3Words.panelCollapsed = !ts3Words.panelCollapsed;

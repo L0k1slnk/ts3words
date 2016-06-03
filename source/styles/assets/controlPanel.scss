@@ -13,7 +13,7 @@ ts3w {
   top: $s_browserPadding;
   right: $s_browserPadding;
   z-index: 99999;
-  transition: opacity .3s, border-radius .3s ease;
+  transition: opacity .3s, border-radius .1s ease;
   opacity: .6;
   overflow: hidden;
   border-radius: $s_borderRadius $s_borderRadius 0 0;
