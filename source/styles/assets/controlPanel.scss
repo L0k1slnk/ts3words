@@ -17,6 +17,7 @@ ts3w {
   opacity: .6;
   overflow: hidden;
   border-radius: $s_borderRadius $s_borderRadius 0 0;
+  z-index: 9999999990000;
 
   &--processing {
     .__ts3w-control-panel__body {
@@ -45,6 +46,9 @@ ts3w {
       display: block;
     }
     .__ts3w-control-panel__header-title--default {
+      display: none;
+    }
+    .__ts3w-control-panel__body {
       display: none;
     }
   }
