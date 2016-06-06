@@ -52,7 +52,15 @@ function turnOn() {
     chrome.browserAction.setIcon({path: "images/icon16.png"});
     // chrome.tabs.onActivated.addListener(tabListener);
     chrome.runtime.onMessage.addListener(domListener);
-    loadContentScriptInAllTabs(injectIntoTab);
+    chrome.tabs.getSelected(null, function (tab) {
+        var currentWindow = tab.windowId;
+        var currentTab = tab.id;
+        if (!tab.url.match(/(chrome):\/\//gi)) {
+            injectIntoTab(tab);
+        }
+        loadContentScriptInAllTabs(injectIntoTab, {windowId: currentWindow, tabId: currentTab});
+    });
+
     // loadContentScriptInAllTabs(showPanels);
 
     console.log('turnOn()');
@@ -89,8 +97,13 @@ function loadContentScriptInAllTabs(callback, params) {
             var currentWindow = windows[i];
             for (var j = 0; j < tabs.length; j++) {
                 var currentTab = currentWindow.tabs[j];
-                if (!currentTab.url.match(/(chrome):\/\//gi)) {
-                    callback(currentTab, params);
+                if (params && params.windowId == currentWindow && params.tabId == currentTab) {
+                    continue;
+                }
+                else {
+                    if (!currentTab.url.match(/(chrome):\/\//gi)) {
+                        callback(currentTab, params);
+                    }
                 }
             }
         }
