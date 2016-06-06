@@ -5,9 +5,12 @@ console.log('LOADDDDD');
 
 if ($(controlPanelId).length) $(controlPanelId).remove();
 chrome.runtime.sendMessage({message: "domready"}, function (response) {
+    console.log('domready message from contentjs')
     if (response) {
+        console.log('response in content from bg');
         if ($(controlPanelId).length) $(controlPanelId).remove();
         if (response.ts3Words.active) {
+            console.log('status is ACTIVE from bg');
             $(tmpl).appendTo('body');
             ts3Words = JSON.parse(localStorage.getItem('ts3w'));
             if (!ts3Words) {
@@ -20,7 +23,6 @@ chrome.runtime.sendMessage({message: "domready"}, function (response) {
                 bottom: ts3Words.panel.position.bottom,
                 right: ts3Words.panel.position.right
             }).addClass('__ts3w-control-panel--' + ts3Words.panel.state);
-
 
             addPanelAppereance($(controlPanelId));
             $('.__ts3w-control-panel__counter').html(response.ts3Words.counter);
@@ -96,4 +98,11 @@ function addPanelAppereance($controlPanel) {
     });
 
 }
+
+
+/*****************************************
+ *
+ *               search words
+ *
+ *****************************************/
 

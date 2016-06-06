@@ -17,12 +17,13 @@ var ts3Words = {
 }
 
 function updateStatus() {
-    ts3Words.active = !ts3Words.active;
     if (ts3Words.active) {
-        turnOn();
+        turnOff();
+        ts3Words.active = true;
     }
     else {
-        turnOff();
+        turnOn();
+        ts3Words.active = false;
     }
 }
 
