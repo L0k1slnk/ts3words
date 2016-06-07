@@ -1,12 +1,12 @@
 ts3w {
   display: block;
+}
+
+.__ts3w-control-panel {
   box-sizing: border-box;
   font-family: "Times New Roman";
   font-size: 14px;
   line-height: 1.25;
-}
-
-.__ts3w-control-panel {
   position: fixed;
   width: $s_defaultWidth;
   background: $c_main;
@@ -76,9 +76,18 @@ ts3w {
     position: relative;
     height: $s_defaultHeight;
     overflow: auto;
+    padding-bottom: $s_space * 2;
     & > ts3w {
       transition: opacity .3s ease-in-out;
     }
+  }
+
+  &__footer {
+    position: absolute;
+    bottom: 0;
+    left: $s_space;
+    border-top: 1px solid darken($c_main, 20%);
+    height: $s_space * 2;
   }
 
   &__figure {
@@ -96,15 +105,16 @@ ts3w {
       font-size: 20px;
     }
 
-    &-translit {
+    &-translate {
       display: inline-block;
       font-size: 16px;
     }
 
-    &-transcription {
+    &-translit {
       display: inline-block;
       font-size: 16px;
       font-style: italic;
+      margin-left: $s_space/2;
     }
 
   }
