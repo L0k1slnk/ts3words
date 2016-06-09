@@ -12,7 +12,6 @@ ts3w {
   background: $c_main;
   top: $s_browserPadding;
   right: $s_browserPadding;
-  z-index: 99999;
   transition: opacity .3s, border-radius .1s ease;
   opacity: .6;
   overflow: hidden;
@@ -20,7 +19,8 @@ ts3w {
   z-index: 9999999990000;
 
   &--processing {
-    .__ts3w-control-panel__body {
+    .__ts3w-control-panel__body,
+    .__ts3w-control-panel__info {
       pointer-events: none;
       & > ts3w {
         opacity: 0;
@@ -53,6 +53,20 @@ ts3w {
     }
   }
 
+  &--settings {
+    .__ts3w-control-panel__content {
+      left: -100%;
+    }
+    .__ts3w-control-panel__info {
+      left: 0;
+    }
+    .__ts3w-control-panel__header {
+      path {
+
+      }
+    }
+  }
+
   &:hover,
   &:focus,
   &:active {
@@ -62,6 +76,7 @@ ts3w {
   &__header {
     cursor: move;
     background: darken($c_main, 20%);
+    position: relative;
     &-title {
       font-size: 16px;
       padding: $s_space/2 $s_space;
@@ -69,25 +84,57 @@ ts3w {
         display: none;
       }
     }
+
+    &-icon {
+      @include centered('y');
+      right: $s_space;
+      width: $s_space * 2;
+      height: $s_space * 2;
+      cursor: pointer;
+      path {
+        fill: darken($c_main, 40%);
+      }
+
+      &:hover {
+        path {
+          fill: darken($c_main, 50%);
+        }
+      }
+
+      &--settings {
+      }
+    }
   }
 
   &__body {
-    padding: $s_space;
     position: relative;
+    width: $s_defaultWidth;
     height: $s_defaultHeight;
-    overflow: auto;
-    padding-bottom: $s_space * 2;
+    overflow: hidden;
     & > ts3w {
       transition: opacity .3s ease-in-out;
     }
   }
 
-  &__footer {
+  &__content,
+  &__info {
+    box-sizing: border-box;
     position: absolute;
-    bottom: 0;
-    left: $s_space;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: $s_space $s_space $s_space * 2;
+    transition: opacity .3s ease-in-out, left .3s ease-in-out !important;
+  }
+
+  &__info {
+    left: 100%;
+  }
+
+  &__footer {
     border-top: 1px solid darken($c_main, 20%);
-    height: $s_space * 2;
   }
 
   &__figure {
@@ -122,4 +169,25 @@ ts3w {
   &__example {
     margin: $s_space 0;
   }
+
+  &__table {
+    display: table;
+    //table-layout: fixed;
+    width: 100%;
+
+    &__row {
+      display: table-row;
+
+      &__td {
+        display: table-cell;
+        border-bottom: 1px solid darken($c_main, 40%);
+        padding: $s_space;
+      }
+    }
+  }
+}
+
+.__ts3w-allMatches,
+.__ts3w-visibleMatches {
+  text-align: right;
 }

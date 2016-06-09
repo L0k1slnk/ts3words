@@ -2,5 +2,9 @@
   &-word {
     display: inline;
     background: $c_main;
+
+    &--visible {
+      background: red;
+    }
   }
 }

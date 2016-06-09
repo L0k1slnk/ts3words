@@ -37,6 +37,7 @@ module.exports = function (grunt) {
                         'source/scripts/vendor/jquery.js',
                         'source/scripts/vendor/jquery-ui.js',
                         'source/scripts/vendor/jquery.mark.js',
+                        'source/scripts/vendor/jquery.visible.js',
                         'source/scripts/content.js'
                     ],
                     'release/scripts/browser.js': [

@@ -1,3 +1,4 @@
+//todo: inject scripts just in current window
 chrome.manifest = chrome.app.getDetails();
 // var scripts = chrome.manifest.content_scripts[0].js;
 // var styles = chrome.manifest.content_scripts[0].css;
@@ -215,7 +216,7 @@ chrome.browserAction.onClicked.addListener(function () {
 function turnOn() {
     chrome.browserAction.setBadgeText({text: "ON"});
     chrome.browserAction.setIcon({path: "images/icon16.png"});
-    // chrome.tabs.onActivated.addListener(tabListener);
+    chrome.tabs.onActivated.addListener(tabListener);
     chrome.runtime.onMessage.addListener(domListener);
     chrome.tabs.getSelected(null, function (tab) {
         var currentWindow = tab.windowId;
@@ -223,6 +224,8 @@ function turnOn() {
 
         if (!tab.url.match(/(chrome):\/\//gi)) {
             injectIntoTab(tab);
+            searchWords(currentTab, harcodedData[0]);
+
         }
         loadContentScriptInAllTabs(injectIntoTab, {windowId: currentWindow, tabId: currentTab});
     });
@@ -237,14 +240,15 @@ function turnOff() {
     chrome.browserAction.setIcon({path: "images/icon16_inactive.png"});
     // chrome.tabs.onActivated.removeListener(tabListener);
     chrome.runtime.onMessage.removeListener(domListener);
-    loadContentScriptInAllTabs(removePanels);
+    loadContentScriptInAllTabs(removeInjections);
     console.log('turnOff()');
 }
 
 
 function tabListener(activeInfo) {
-    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words});
+    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words, data: harcodedData});
     ts3Words.counter++;
+    // searchWords(activeInfo.tabId, harcodedData[0]);
     console.log('activate tab');
 }
 
@@ -288,7 +292,7 @@ function injectIntoTab(tab) {
 
 }
 
-function removePanels(tab) {
+function removeInjections(tab) {
     chrome.tabs.executeScript(tab.id, {
         code: "var panel = document.getElementById('__ts3w-control-panel'); if(panel) panel.remove();"
     });
@@ -301,3 +305,9 @@ function removePanels(tab) {
 //         code: "var panel = document.getElementById('__ts3w-control-panel'); console.log(panel); if(panel) panel.style.display = 'block';"
 //     });
 // }
+
+function searchWords(tabId, word) {
+    chrome.tabs.executeScript(tabId, {
+        code: 'searchWord(' + word + ');'
+    });
+}
