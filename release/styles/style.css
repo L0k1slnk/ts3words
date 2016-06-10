@@ -3330,6 +3330,7 @@ ts3w {
   overflow: hidden;
   border-radius: 10px 10px 0 0;
   z-index: 9999999990000;
+  color: #000;
 }
 .__ts3w-control-panel--processing .__ts3w-control-panel__body,
 .__ts3w-control-panel--processing .__ts3w-control-panel__info {
@@ -3472,11 +3473,36 @@ ts3w {
 }
 
 .__ts3w-word {
-  display: inline;
+  display: inline-block;
   background: #E7EFB8;
+  -webkit-perspective: 1000px;
+          perspective: 1000px;
+}
+.__ts3w-word__lng {
+  display: none;
+  will-change: background;
+  -webkit-filter: url("#__ts3w-word-filter");
+          filter: url("#__ts3w-word-filter");
+  -webkit-font-smoothing: antialiased;
+  background-color: #222;
+  /* dark blue */
+  outline: 90px solid transparent !important;
+  Transition: background-color 0.1s ease-out;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+}
+.__ts3w-word__lng--current {
+  display: block;
 }
 .__ts3w-word--visible {
   background: red;
+}
+
+.__ts3w-svg-filters {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
 }
 
 /*# sourceMappingURL=style.css.map */

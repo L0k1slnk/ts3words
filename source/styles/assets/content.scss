@@ -1,10 +1,35 @@
 .__ts3w {
   &-word {
-    display: inline;
+    display: inline-block;
     background: $c_main;
+    perspective: 1000px;
+
+    &__lng {
+
+      display: none;
+      will-change: background;
+      filter: url("#__ts3w-word-filter");
+      -webkit-font-smoothing: antialiased;
+      background-color: #222; /* dark blue */
+
+      outline: 90px solid transparent !important;
+      Transition: background-color 0.1s ease-out;
+      transform: translateZ(0);
+
+      &--current {
+        display: block;
+      }
+    }
 
     &--visible {
       background: red;
     }
   }
+}
+
+.__ts3w-svg-filters {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
 }

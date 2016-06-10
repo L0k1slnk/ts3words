@@ -178,7 +178,8 @@ var ts3Words = {
             left: 'auto',
             right: '30px'
         }
-    }
+    },
+    words: harcodedData
 }
 
 function updateStatus() {
@@ -192,7 +193,7 @@ function updateStatus() {
     }
 }
 
-turnOn();
+// turnOn();
 
 chrome.browserAction.onClicked.addListener(function () {
     updateStatus();
@@ -203,10 +204,11 @@ chrome.browserAction.onClicked.addListener(function () {
 //     turnOff();
 // });
 //
-// chrome.management.onEnabled.addListener(function(ExtensionInfo) {
-//     alert('enable');
-//     turnOn();
-// });
+
+chrome.runtime.onInstalled.addListener(function () {
+    loadContentScriptInAllTabs(clearStorage);
+    turnOn();
+});
 
 
 // loadContentScriptInAllTabs(injectIntoTab);
@@ -224,7 +226,7 @@ function turnOn() {
 
         if (!tab.url.match(/(chrome):\/\//gi)) {
             injectIntoTab(tab);
-            searchWords(currentTab, harcodedData[0]);
+            searchWords(currentTab, harcodedData[0].word);
 
         }
         loadContentScriptInAllTabs(injectIntoTab, {windowId: currentWindow, tabId: currentTab});
@@ -246,7 +248,7 @@ function turnOff() {
 
 
 function tabListener(activeInfo) {
-    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words, data: harcodedData});
+    chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words});
     ts3Words.counter++;
     // searchWords(activeInfo.tabId, harcodedData[0]);
     console.log('activate tab');
@@ -256,7 +258,7 @@ function domListener(request, sender, sendResponse) {
     console.log(request);
     switch (request.message) {
         case "get data":
-            sendResponse({ts3Words: ts3Words, data: harcodedData});
+            sendResponse({ts3Words: ts3Words});
             ts3Words.counter++;
             break;
     }
@@ -294,7 +296,7 @@ function injectIntoTab(tab) {
 
 function removeInjections(tab) {
     chrome.tabs.executeScript(tab.id, {
-        code: "var panel = document.getElementById('__ts3w-control-panel'); if(panel) panel.remove();"
+        code: "clearDom();"
     });
     chrome.tabs.executeScript(tab.id, {
         code: "removeFindedWords();"
@@ -308,6 +310,13 @@ function removeInjections(tab) {
 
 function searchWords(tabId, word) {
     chrome.tabs.executeScript(tabId, {
-        code: 'searchWord(' + word + ');'
+        code: 'searchWord("' + word + '");'
     });
+}
+
+function clearStorage(tab) {
+    chrome.tabs.executeScript(tab.id, {
+        code: 'localStorage.removeItem("ts3w");'
+    });
+    console.log('cleared!');
 }
