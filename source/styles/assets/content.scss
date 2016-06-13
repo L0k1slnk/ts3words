@@ -1,16 +1,16 @@
 .__ts3w {
   &-word {
     display: inline-block;
-    background: $c_main;
     perspective: 1000px;
 
     &__lng {
 
       display: none;
       will-change: background;
-      filter: url("#__ts3w-word-filter");
+      cursor: pointer;
+      //filter: url("#__ts3w-word-filter_13");
       -webkit-font-smoothing: antialiased;
-      background-color: #222; /* dark blue */
+      background-color: $c_main;
 
       outline: 90px solid transparent !important;
       Transition: background-color 0.1s ease-out;
@@ -22,7 +22,22 @@
     }
 
     &--visible {
-      background: red;
+      .__ts3w-word__lng {
+        background: red;
+      }
+    }
+
+    &:hover {
+      .__ts3w-word__lng {
+        //display: none;
+        &--all {
+          display: inline-block;
+          @include centered('x');
+          bottom: 100%;
+          white-space: nowrap;
+
+        }
+      }
     }
   }
 }

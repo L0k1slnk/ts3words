@@ -3312,6 +3312,7 @@ th {
 
 ts3w {
   display: block;
+  text-align: left;
 }
 
 .__ts3w-control-panel {
@@ -3474,18 +3475,15 @@ ts3w {
 
 .__ts3w-word {
   display: inline-block;
-  background: #E7EFB8;
   -webkit-perspective: 1000px;
           perspective: 1000px;
 }
 .__ts3w-word__lng {
   display: none;
   will-change: background;
-  -webkit-filter: url("#__ts3w-word-filter");
-          filter: url("#__ts3w-word-filter");
+  cursor: pointer;
   -webkit-font-smoothing: antialiased;
-  background-color: #222;
-  /* dark blue */
+  background-color: #E7EFB8;
   outline: 90px solid transparent !important;
   Transition: background-color 0.1s ease-out;
   -webkit-transform: translateZ(0);
@@ -3494,8 +3492,17 @@ ts3w {
 .__ts3w-word__lng--current {
   display: block;
 }
-.__ts3w-word--visible {
+.__ts3w-word--visible .__ts3w-word__lng {
   background: red;
+}
+.__ts3w-word:hover .__ts3w-word__lng--all {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  bottom: 100%;
+  white-space: nowrap;
 }
 
 .__ts3w-svg-filters {

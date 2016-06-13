@@ -226,7 +226,7 @@ function turnOn() {
 
         if (!tab.url.match(/(chrome):\/\//gi)) {
             injectIntoTab(tab);
-            searchWords(currentTab, harcodedData[0].word);
+            // searchWords(currentTab, harcodedData[0]);
 
         }
         loadContentScriptInAllTabs(injectIntoTab, {windowId: currentWindow, tabId: currentTab});
@@ -310,7 +310,7 @@ function removeInjections(tab) {
 
 function searchWords(tabId, word) {
     chrome.tabs.executeScript(tabId, {
-        code: 'searchWord("' + word + '");'
+        code: 'searchWord(' + JSON.stringify(word) + ');'
     });
 }
 
