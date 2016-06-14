@@ -240,7 +240,7 @@ function turnOn() {
 function turnOff() {
     chrome.browserAction.setBadgeText({text: ""});
     chrome.browserAction.setIcon({path: "images/icon16_inactive.png"});
-    // chrome.tabs.onActivated.removeListener(tabListener);
+    chrome.tabs.onActivated.removeListener(tabListener);
     chrome.runtime.onMessage.removeListener(domListener);
     loadContentScriptInAllTabs(removeInjections);
     console.log('turnOff()');
@@ -252,14 +252,20 @@ function tabListener(activeInfo) {
     ts3Words.counter++;
     // searchWords(activeInfo.tabId, harcodedData[0]);
     console.log('activate tab');
+    console.log(activeInfo);
 }
 
 function domListener(request, sender, sendResponse) {
-    console.log(request);
+    console.log(sender);
     switch (request.message) {
         case "get data":
-            sendResponse({ts3Words: ts3Words});
-            ts3Words.counter++;
+            sendResponse({ts3Words: ts3Words, tab: sender.tab});
+            break;
+        case "word interaction":
+            debugger
+            ts3Words.words[0].renderCount = request.ts3Words.words[0].renderCount;
+            ts3Words.words[0].actionCount = request.ts3Words.words[0].actionCount;
+            sendResponse({ts3Words: ts3Words, tab: sender.tab});
             break;
     }
 }
@@ -320,3 +326,4 @@ function clearStorage(tab) {
     });
     console.log('cleared!');
 }
+

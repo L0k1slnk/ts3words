@@ -3283,6 +3283,10 @@ th {
   animation-name: slideOutUp;
 }
 
+.morphext > .animated {
+  display: inline-block;
+}
+
 /*****************************************
 *
 *               colors
@@ -3492,9 +3496,6 @@ ts3w {
 .__ts3w-word__lng--current {
   display: block;
 }
-.__ts3w-word--visible .__ts3w-word__lng {
-  background: red;
-}
 .__ts3w-word:hover .__ts3w-word__lng--all {
   display: inline-block;
   position: absolute;
@@ -3511,5 +3512,4 @@ ts3w {
   width: 1px;
   height: 1px;
 }
-
 /*# sourceMappingURL=style.css.map */
