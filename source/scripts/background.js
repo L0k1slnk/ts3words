@@ -35,7 +35,7 @@ var harcodedData = [
         translation: 'кот',
         transliteration: 'kot',
         examples: ['My neghbours had a very cute red kot.'],
-        imageurl: 'http://animaliaz-life.com/data_images/cat/cat8.jpg'
+        imageurl: 'https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg'
     }, {
         id: '2',
         learned: false,
@@ -168,8 +168,11 @@ var harcodedData = [
 ];
 
 var ts3Words = {
-    active: true,
+    active: false,
     counter: 0,
+    showCounterMax: 5,
+    actionCounterMax: 5,
+    currentWordIndex: 0,
     panel: {
         state: 'default', // 'default', 'collapsed', 'stuckTop', 'stuckBottom', 'stuckLeft', 'stuckRight'
         position: {
@@ -179,17 +182,16 @@ var ts3Words = {
             right: '30px'
         }
     },
-    words: harcodedData
+    words: harcodedData,
+    learned: []
 }
 
 function updateStatus() {
     if (ts3Words.active) {
         turnOff();
-        ts3Words.active = false;
     }
     else {
         turnOn();
-        ts3Words.active = true;
     }
 }
 
@@ -216,6 +218,7 @@ chrome.runtime.onInstalled.addListener(function () {
 
 
 function turnOn() {
+    ts3Words.active = true;
     chrome.browserAction.setBadgeText({text: "ON"});
     chrome.browserAction.setIcon({path: "images/icon16.png"});
     chrome.tabs.onActivated.addListener(tabListener);
@@ -238,6 +241,7 @@ function turnOn() {
 }
 
 function turnOff() {
+    ts3Words.active = false;
     chrome.browserAction.setBadgeText({text: ""});
     chrome.browserAction.setIcon({path: "images/icon16_inactive.png"});
     chrome.tabs.onActivated.removeListener(tabListener);
@@ -262,9 +266,12 @@ function domListener(request, sender, sendResponse) {
             sendResponse({ts3Words: ts3Words, tab: sender.tab});
             break;
         case "word interaction":
-            debugger
-            ts3Words.words[0].renderCount = request.ts3Words.words[0].renderCount;
-            ts3Words.words[0].actionCount = request.ts3Words.words[0].actionCount;
+            ts3Words.learned = request.ts3Words.learned;
+            ts3Words.words[ts3Words.currentWordIndex].renderCount = request.ts3Words.words[ts3Words.currentWordIndex].renderCount;
+            ts3Words.words[ts3Words.currentWordIndex].actionCount = request.ts3Words.words[ts3Words.currentWordIndex].actionCount;
+            if (ts3Words.words[ts3Words.currentWordIndex].renderCount >= ts3Words.showCounterMax || ts3Words.words[ts3Words.currentWordIndex].actionCount >= ts3Words.actionCounterMax) {
+                ts3Words.currentWordIndex++;
+            }
             sendResponse({ts3Words: ts3Words, tab: sender.tab});
             break;
     }

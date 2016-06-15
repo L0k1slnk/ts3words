@@ -3,6 +3,10 @@
     display: inline-block;
     perspective: 1000px;
 
+    &__morphext {
+      display: inline;
+    }
+
     &__lng {
 
       display: none;
@@ -10,10 +14,9 @@
       cursor: pointer;
       //filter: url("#__ts3w-word-filter_13");
       -webkit-font-smoothing: antialiased;
-      background-color: $c_main;
 
       outline: 90px solid transparent !important;
-      Transition: background-color 0.1s ease-out;
+      transition: background-color 0.1s ease-out;
       transform: translateZ(0);
 
       &--current {
@@ -23,7 +26,17 @@
 
     &--visible {
       .__ts3w-word__lng {
-        //background: red;
+        background-color: $c_main;
+      }
+    }
+
+    &--learned {
+      .__ts3w-word__lng {
+        display: none !important;
+        &--translate {
+          display: inline-block !important;
+          background: lighten($c_main, 10%);
+        }
       }
     }
 

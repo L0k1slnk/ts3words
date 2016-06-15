@@ -69,6 +69,10 @@ ts3w {
     }
   }
 
+  &--focus {
+    opacity: 1;
+  }
+
   &:hover,
   &:focus,
   &:active {

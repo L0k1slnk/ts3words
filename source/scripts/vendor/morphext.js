@@ -51,7 +51,7 @@
         },
         animate: function () {
             this.index = ++this.index % this.phrases.length;
-            this.element[0].innerHTML = "<span class=\"animated " + this.settings.animation + "\">" + this.phrases[this.index] + "</span>";
+            this.element[0].innerHTML = "<ts3w class=\"__ts3w-word__morphext animated " + this.settings.animation + "\">" + this.phrases[this.index] + "</ts3w>";
 
             // if ($.isFunction(this.settings.complete)) {
             //     this.settings.complete.call(this);

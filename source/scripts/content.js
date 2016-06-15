@@ -1,3 +1,12 @@
+$.fn.extend({
+    animateCss: function (animationName) {
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $(this).addClass('animated ' + animationName).one(animationEnd, function () {
+            $(this).removeClass('animated ' + animationName);
+        });
+    }
+});
+
 var svgFilter = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" class="__ts3w-svg-filters"><defs><filter><feTurbulence type="fractalNoise" baseFrequency="0.000001" numOctaves="1" result="warp" /><feOffset dx="-90" dy="-90" result="warpOffset" /><feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warpOffset" /></filter></defs></svg>';
 var controlPanelId = '#__ts3w-control-panel';
 var ts3Words = null;
@@ -28,7 +37,7 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
                 infoUpdate(response);
 
                 removeFindedWords();
-                searchWord(ts3Words.words[0]);
+                searchWord(ts3Words.words[ts3Words.currentWordIndex]);
 
                 if (thisTab.active) {
                     wordsInteractions();
@@ -36,9 +45,7 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
 
             });
 
-
         }
-
 
     }
 });
@@ -136,7 +143,7 @@ function updatePanelInfo(data) {
     $(controlPanelId).find('.__ts3w-control-panel__definition-current').html(data.word);
     $(controlPanelId).find('.__ts3w-control-panel__definition-translate').html(data.translation);
     $(controlPanelId).find('.__ts3w-control-panel__definition-translit').html('(' + data.transliteration + ')');
-    $(controlPanelId).find('.__ts3w-control-panel__figure-image').attr('src', data.imageurl);
+    $(controlPanelId).find('.__ts3w-control-panel__figure-image').attr('src', data.imageurl).attr('alt', data.word);
     var examples = "";
     for (var i = 0; i < data.examples.length; i++) {
         examples += '<ts3w class="__ts3w-control-panel__example">' + data.examples[i] + '</ts3w>';
@@ -163,6 +170,8 @@ function searchWord(word) {
         diacritics: true,
         debug: true,
         each: function (el) {
+
+            $(el).attr('data-word-id', word.id);
             console.log($(el));
             addWordsMarkup($(el), word);
             // checkVisibility($(el));
@@ -194,10 +203,9 @@ function removeFindedWords() {
 }
 
 function checkVisibility(words) {
-    var words = words || $('.__ts3w-word');
+    var words = words || $('.__ts3w-word').not('.__ts3w-word--learned');
     for (var i = 0; i < words.length; i++) {
         var $word = $(words[i]);
-        if ($word)
         if ($word.visible() && $word.is(':visible') && $word.css('visibility') != 'hidden' && $word.css('opacity') != 0) {
             $word.addClass('__ts3w-word--visible');
 
@@ -220,12 +228,13 @@ function addWordsMarkup($el, word) {
     var markup = '';
     counter++;
     var filter = svgFilter;
+    var currWord = $el.text();
     filter = filter.replace('<filter>', '<filter id="__ts3w-word-filter_' + counter + '">');
     $el.attr('data-id', '__ts3w-word-filter_' + counter);
-    markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--current" style="filter: url(\'#__ts3w-word-filter_' + counter + '\'); -webkit-filter: url(\'#__ts3w-word-filter_' + counter + '\');" title="' + word.word + ' - ' + word.translation + ' (' + word.transliteration + ')">' + word.word + '</ts3w>';
+    markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--current" style="filter: url(\'#__ts3w-word-filter_' + counter + '\'); -webkit-filter: url(\'#__ts3w-word-filter_' + counter + '\');" title="' + word.word + ' - ' + word.translation + ' (' + word.transliteration + ')">' + currWord + '</ts3w>';
     markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--translit">' + word.transliteration + '</ts3w>';
     markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--translate">' + word.translation + '</ts3w>';
-    markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--rotator">' + word.word + '|' + word.translation + '|' + word.transliteration + '</ts3w>';
+    markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--rotator">' + currWord + '|' + word.translation + '|' + word.transliteration + '</ts3w>';
     markup += filter;
     // markup += '<ts3w class="__ts3w-word__lng __ts3w-word__lng--all">' + word.word + ' - ' + word.translation + ' (' + word.transliteration +  ')</ts3w>';
 
@@ -243,11 +252,20 @@ function clearDom() {
 
 
 function attentionWord() {
-    var $words = $('.__ts3w-word--visible').not('.__ts3w-word--attention');
+    var $words = $('.__ts3w-word--visible').not('.__ts3w-word--attention').not('.__ts3w-word--learned');
+    var action = false;
     if ($words.length) {
-        ts3Words.words[0].renderCount++;
+        action = true;
+        ts3Words.words[ts3Words.currentWordIndex].renderCount++;
         chrome.runtime.sendMessage({message: "word interaction", ts3Words: ts3Words}, function (response) {
-            updatePanelInfo(response.ts3Words.words[0]);
+            if (ts3Words.currentWordIndex != response.ts3Words.currentWordIndex) {
+                markLearned(ts3Words.words[ts3Words.currentWordIndex].id);
+                searchWord(ts3Words.words[response.ts3Words.currentWordIndex]);
+                ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
+                response.ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
+                wordsInteractions();
+            }
+            infoUpdate(response);
         });
     }
     $words.each(function () {
@@ -275,14 +293,44 @@ function attentionWord() {
     });
 
 
-    $(document).off('click.ts3wSettings').on('click.ts3wSettings', '.__ts3w-word--attention', function () {
-        ts3Words.words[0].renderCount = 0;
-        ts3Words.words[0].actionCount++;
-        chrome.runtime.sendMessage({message: "word interaction", ts3Words: ts3Words}, function (response) {
-            updatePanelInfo(response.ts3Words.words[0]);
-        });
+    $(document).off('click.ts3wSettings').on('click.ts3wSettings', '.__ts3w-word--attention', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (+$(this).attr('data-word-id') != ts3Words.currentWordIndex) {
+            updatePanelInfo(ts3Words.learned[+$(this).attr('data-word-id')]);
+            $(controlPanelId).addClass('__ts3w-control-panel--focus').removeClass('__ts3w-control-panel--collapsed  __ts3w-control-panel--settings');
+            $(controlPanelId).animateCss('pulse');
+        }
+        else {
+            ts3Words.words[ts3Words.currentWordIndex].renderCount = 0;
+            ts3Words.words[ts3Words.currentWordIndex].actionCount++;
+            $(controlPanelId).addClass('__ts3w-control-panel--focus').removeClass('__ts3w-control-panel--collapsed  __ts3w-control-panel--settings');
+            $(controlPanelId).animateCss('pulse');
+
+            chrome.runtime.sendMessage({message: "word interaction", ts3Words: ts3Words}, function (response) {
+                if (ts3Words.currentWordIndex != response.ts3Words.currentWordIndex) {
+                    markLearned(ts3Words.words[ts3Words.currentWordIndex].id);
+                    searchWord(ts3Words.words[response.ts3Words.currentWordIndex]);
+                    ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
+                    response.ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
+                    wordsInteractions();
+                }
+                infoUpdate(response);
+            });
+        }
+
         return false;
     });
+    $(document).off('click.ts3w').on('click.ts3w', function (e) {
+        console.log($(e.target).parents('ts3w').length);
+        console.log(e.target.tagName.toLowerCase());
+        if (!$(e.target).parents('ts3w').length && e.target.tagName.toLowerCase() != 'ts3w') {
+            $(controlPanelId).removeClass('__ts3w-control-panel--focus');
+            updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
+        }
+    });
+    return action;
 }
 
 function wordsInteractions() {
@@ -291,7 +339,9 @@ function wordsInteractions() {
     scrollTimer = setTimeout(function () {
 
         checkVisibility();
-        attentionWord();
+        if (attentionWord()) {
+            // $(controlPanelId).animateCss('rubberBand');
+        }
 
 
     }, delayInteractions);
@@ -312,7 +362,7 @@ function infoUpdate(response) {
     }).addClass('__ts3w-control-panel--' + ts3Words.panel.state);
 
     addPanelAppereance($(controlPanelId));
-    updatePanelInfo(ts3Words.words[0]);
+    updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
 }
 
 function showLngVariants($words) {
@@ -340,9 +390,17 @@ function showLngVariants($words) {
     });
 }
 
+function markLearned(wordId) {
+    $('.__ts3w-word[data-word-id="' + wordId + '"]').addClass('__ts3w-word--learned __ts3w-word--visible __ts3w-word--attention');
+}
+
+
 $(document).off('scroll.ts3w').on('scroll.ts3w', function () {
     wordsInteractions();
 });
+
+
+
 
 
 
