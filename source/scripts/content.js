@@ -35,9 +35,19 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
 
                 $(data).appendTo('body');
                 infoUpdate(response);
-
                 removeFindedWords();
-                searchWord(ts3Words.words[ts3Words.currentWordIndex]);
+
+
+                if (response.ts3Words.learned.length) {
+                    for (var i = 0; i < response.ts3Words.learned.length; i++) {
+                        searchWord(response.ts3Words.learned[i]);
+                        markLearned(response.ts3Words.learned[i].id);
+                    }
+                }
+                if (ts3Words.counter < ts3Words.maxCounter) {
+                    searchWord(ts3Words.words[ts3Words.currentWordIndex]);
+                }
+
 
                 if (thisTab.active) {
                     wordsInteractions();
@@ -54,10 +64,14 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
 chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
     if (response.ts3Words.active) {
         if (response.message === "tab activated") {
+            if (response.ts3Words.learned.length) {
+                for (var i = 0; i < response.ts3Words.learned.length; i++) {
+                    markLearned(response.ts3Words.learned[i].id);
+                }
+            }
             infoUpdate(response);
             wordsInteractions();
             console.log('tab act callback');
-
         }
     }
 
@@ -138,20 +152,35 @@ function addPanelAppereance($controlPanel) {
 }
 
 function updatePanelInfo(data) {
-    $(controlPanelId).addClass('__ts3w-control-panel--processing');
-    $(controlPanelId).find('.__ts3w-control-panel__header-title--collapsed').html(data.word + ' - ' + data.translation + ' (' + data.transliteration + ')');
-    $(controlPanelId).find('.__ts3w-control-panel__definition-current').html(data.word);
-    $(controlPanelId).find('.__ts3w-control-panel__definition-translate').html(data.translation);
-    $(controlPanelId).find('.__ts3w-control-panel__definition-translit').html('(' + data.transliteration + ')');
-    $(controlPanelId).find('.__ts3w-control-panel__figure-image').attr('src', data.imageurl).attr('alt', data.word);
-    var examples = "";
-    for (var i = 0; i < data.examples.length; i++) {
-        examples += '<ts3w class="__ts3w-control-panel__example">' + data.examples[i] + '</ts3w>';
+    if (data) {
+        $(controlPanelId).addClass('__ts3w-control-panel--processing');
+        $(controlPanelId).find('.__ts3w-control-panel__header-title--collapsed').html(data.word + ' - ' + data.translation + ' (' + data.transliteration + ')');
+        $(controlPanelId).find('.__ts3w-control-panel__definition-current').html(data.word);
+        $(controlPanelId).find('.__ts3w-control-panel__definition-translate').html(data.translation);
+        $(controlPanelId).find('.__ts3w-control-panel__definition-translit').html('(' + data.transliteration + ')');
+        $(controlPanelId).find('.__ts3w-control-panel__figure-image').attr('src', data.imageurl).attr('alt', data.word);
+        var examples = "";
+        for (var i = 0; i < data.examples.length; i++) {
+            examples += '<ts3w class="__ts3w-control-panel__example">' + data.examples[i] + '</ts3w>';
+        }
+        $(controlPanelId).find('.__ts3w-control-panel__examples').html(examples);
+        $(controlPanelId).removeClass('__ts3w-control-panel--processing');
+        $(controlPanelId).find('.__ts3w-interactions').html(data.renderCount);
+        $(controlPanelId).find('.__ts3w-click').html(data.actionCount);
     }
-    $(controlPanelId).find('.__ts3w-control-panel__examples').html(examples);
-    $(controlPanelId).removeClass('__ts3w-control-panel--processing');
-    $(controlPanelId).find('.__ts3w-interactions').html(data.renderCount);
-    $(controlPanelId).find('.__ts3w-click').html(data.actionCount);
+    else {
+        $(controlPanelId).addClass('__ts3w-control-panel--processing');
+        $(controlPanelId).find('.__ts3w-control-panel__header-title--collapsed').html("that's it for today");
+        $(controlPanelId).find('.__ts3w-control-panel__definition-current').html("that's it for today");
+        $(controlPanelId).find('.__ts3w-control-panel__definition-translate').html('');
+        $(controlPanelId).find('.__ts3w-control-panel__definition-translit').html('');
+        $(controlPanelId).find('.__ts3w-control-panel__figure-image').attr('src', 'https://bytesizemoments.com/wp-content/uploads/2014/04/placeholder.png').attr('alt', "that's it for today");
+        $(controlPanelId).find('.__ts3w-control-panel__examples').html('');
+        $(controlPanelId).removeClass('__ts3w-control-panel--processing');
+        $(controlPanelId).find('.__ts3w-interactions').html('-');
+        $(controlPanelId).find('.__ts3w-click').html('--');
+    }
+
 }
 
 
@@ -214,7 +243,7 @@ function checkVisibility(words) {
             // $word.removeClass('__ts3w-word--visible');
         }
     }
-    numVisibleWords = $('.__ts3w-word--visible').length;
+    numVisibleWords = $('.__ts3w-word--visible').not('.__ts3w-word--learned').length;
     $(controlPanelId).find('.__ts3w-visibleMatches').html(numVisibleWords);
 }
 
@@ -259,6 +288,7 @@ function attentionWord() {
         ts3Words.words[ts3Words.currentWordIndex].renderCount++;
         chrome.runtime.sendMessage({message: "word interaction", ts3Words: ts3Words}, function (response) {
             if (ts3Words.currentWordIndex != response.ts3Words.currentWordIndex) {
+                numVisibleWords = 0;
                 markLearned(ts3Words.words[ts3Words.currentWordIndex].id);
                 searchWord(ts3Words.words[response.ts3Words.currentWordIndex]);
                 ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
@@ -310,6 +340,7 @@ function attentionWord() {
 
             chrome.runtime.sendMessage({message: "word interaction", ts3Words: ts3Words}, function (response) {
                 if (ts3Words.currentWordIndex != response.ts3Words.currentWordIndex) {
+                    numVisibleWords = 0;
                     markLearned(ts3Words.words[ts3Words.currentWordIndex].id);
                     searchWord(ts3Words.words[response.ts3Words.currentWordIndex]);
                     ts3Words.learned[ts3Words.currentWordIndex] = ts3Words.words[ts3Words.currentWordIndex];
@@ -327,7 +358,12 @@ function attentionWord() {
         console.log(e.target.tagName.toLowerCase());
         if (!$(e.target).parents('ts3w').length && e.target.tagName.toLowerCase() != 'ts3w') {
             $(controlPanelId).removeClass('__ts3w-control-panel--focus');
-            updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
+            if (ts3Words.counter < ts3Words.maxCounter) {
+                updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
+            }
+            else {
+                updatePanelInfo();
+            }
         }
     });
     return action;
@@ -362,7 +398,16 @@ function infoUpdate(response) {
     }).addClass('__ts3w-control-panel--' + ts3Words.panel.state);
 
     addPanelAppereance($(controlPanelId));
-    updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
+    if (ts3Words.counter < ts3Words.maxCounter) {
+        updatePanelInfo(ts3Words.words[ts3Words.currentWordIndex]);
+    }
+    else {
+        updatePanelInfo();
+    }
+
+
+
+   
 }
 
 function showLngVariants($words) {

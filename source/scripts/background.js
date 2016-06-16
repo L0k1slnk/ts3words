@@ -169,10 +169,11 @@ var harcodedData = [
 
 var ts3Words = {
     active: false,
-    counter: 0,
     showCounterMax: 5,
     actionCounterMax: 5,
     currentWordIndex: 0,
+    counter: 0,
+    maxCounter: 3,
     panel: {
         state: 'default', // 'default', 'collapsed', 'stuckTop', 'stuckBottom', 'stuckLeft', 'stuckRight'
         position: {
@@ -183,7 +184,16 @@ var ts3Words = {
         }
     },
     words: harcodedData,
-    learned: []
+    learned: [],
+    // cap: {
+    //     word: '',
+    //     translation: '',
+    //     transliteration: '',
+    //     imageurl: 'https://bytesizemoments.com/wp-content/uploads/2014/04/placeholder.png',
+    //     examples: [],
+    //     renderCount: 0,
+    //     actionCount: 0
+    // }
 }
 
 function updateStatus() {
@@ -253,7 +263,6 @@ function turnOff() {
 
 function tabListener(activeInfo) {
     chrome.tabs.sendMessage(activeInfo.tabId, {message: "tab activated", ts3Words: ts3Words});
-    ts3Words.counter++;
     // searchWords(activeInfo.tabId, harcodedData[0]);
     console.log('activate tab');
     console.log(activeInfo);
@@ -267,10 +276,12 @@ function domListener(request, sender, sendResponse) {
             break;
         case "word interaction":
             ts3Words.learned = request.ts3Words.learned;
+            ts3Words.couner = request.ts3Words.counter;
             ts3Words.words[ts3Words.currentWordIndex].renderCount = request.ts3Words.words[ts3Words.currentWordIndex].renderCount;
             ts3Words.words[ts3Words.currentWordIndex].actionCount = request.ts3Words.words[ts3Words.currentWordIndex].actionCount;
             if (ts3Words.words[ts3Words.currentWordIndex].renderCount >= ts3Words.showCounterMax || ts3Words.words[ts3Words.currentWordIndex].actionCount >= ts3Words.actionCounterMax) {
                 ts3Words.currentWordIndex++;
+                ts3Words.counter++;
             }
             sendResponse({ts3Words: ts3Words, tab: sender.tab});
             break;
