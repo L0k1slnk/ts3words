@@ -3482,8 +3482,6 @@ ts3w {
 
 .__ts3w-word {
   display: inline-block;
-  -webkit-perspective: 1000px;
-          perspective: 1000px;
 }
 .__ts3w-word__morphext {
   display: inline;
@@ -3510,7 +3508,7 @@ ts3w {
 }
 .__ts3w-word--learned .__ts3w-word__lng--translate {
   display: inline-block !important;
-  background: #f5f8e2;
+  background: rgba(89, 139, 255, 0.3);
 }
 .__ts3w-word:hover .__ts3w-word__lng--all {
   display: inline-block;

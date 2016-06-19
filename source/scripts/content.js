@@ -12,15 +12,16 @@ var controlPanelId = '#__ts3w-control-panel';
 var ts3Words = null;
 var counter = 0;
 var scrollTimer;
+var domListenerTimer;
 var thisTab;
 
 var delayInteractions = 800;
 var numVisibleWords = 0;
 
 clearDom();
+
 chrome.runtime.sendMessage({message: "get data"}, function (response) {
     console.log('domready message from contentjs');
-
     // removeFindedWords();
     if (response) {
         ts3Words = response.ts3Words;
@@ -29,7 +30,6 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
         if ($(controlPanelId).length) $(controlPanelId).remove();
 
         if (response.ts3Words.active) {
-            console.log('status is ACTIVE from bg');
             // $(tmpl).appendTo('body');
             $.get(chrome.extension.getURL('../content.html'), function (data) {
 
@@ -59,17 +59,25 @@ chrome.runtime.sendMessage({message: "get data"}, function (response) {
 
     }
 });
+
+
 // update info on activate tab
 
 chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
+    ts3Words = response.ts3Words;
     if (response.ts3Words.active) {
+        infoUpdate(response);
         if (response.message === "tab activated") {
             if (response.ts3Words.learned.length) {
                 for (var i = 0; i < response.ts3Words.learned.length; i++) {
+                    searchWord(response.ts3Words.learned[i]);
                     markLearned(response.ts3Words.learned[i].id);
                 }
             }
-            infoUpdate(response);
+            if (ts3Words.counter < ts3Words.maxCounter) {
+                searchWord(ts3Words.words[ts3Words.currentWordIndex]);
+            }
+            $(controlPanelId).find('.__ts3w-allMatches').html($('.__ts3w-word').length);
             wordsInteractions();
             console.log('tab act callback');
         }
@@ -104,7 +112,7 @@ function addPanelAppereance($controlPanel) {
                 bottom: 'auto',
                 left: ui.position.left + 'px',
                 right: 'auto'
-            }
+            };
             localStorage.setItem('ts3w', JSON.stringify(ts3Words));
         }
     });
@@ -169,7 +177,7 @@ function updatePanelInfo(data) {
         $(controlPanelId).find('.__ts3w-click').html(data.actionCount);
     }
     else {
-        $(controlPanelId).addClass('__ts3w-control-panel--processing');
+        $(controlPanelId).addClass('__ts3w-control-panel--processing __ts3w-control-panel--collapsed');
         $(controlPanelId).find('.__ts3w-control-panel__header-title--collapsed').html("that's it for today");
         $(controlPanelId).find('.__ts3w-control-panel__definition-current').html("that's it for today");
         $(controlPanelId).find('.__ts3w-control-panel__definition-translate').html('');
@@ -201,8 +209,13 @@ function searchWord(word) {
         each: function (el) {
 
             $(el).attr('data-word-id', word.id);
-            console.log($(el));
+            console.log('finded word  - ', $(el));
             addWordsMarkup($(el), word);
+            // console.time('overflowing');
+            // $(el).overflowing('body', function(overflowed) {
+            //     console.log($(el), 'This word is being overflowed', overflowed);
+            // })
+            // console.timeEnd('overflowing');
             // checkVisibility($(el));
             // attentionWord();
 
@@ -232,6 +245,10 @@ function removeFindedWords() {
 }
 
 function checkVisibility(words) {
+    // TODO: check if word owerflowed
+    // parentContainter.offsetHeight < parentContainter.scrollHeight || parentContainter.offsetWidth < parentContainter.scrollWidth
+    // or parent.scrollWidth > $(parent).innerWidth() ..
+    // need step by step check all parents for all words???? o_O how about perfomance???
     var words = words || $('.__ts3w-word').not('.__ts3w-word--learned');
     for (var i = 0; i < words.length; i++) {
         var $word = $(words[i]);
@@ -276,7 +293,8 @@ function addWordsMarkup($el, word) {
 function clearDom() {
     $(controlPanelId).remove();
     $('.__ts3w-markup').remove();
-
+    $(document).off('scroll.ts3w');
+    $(document).off('click.ts3wSettings');
 }
 
 
@@ -306,7 +324,6 @@ function attentionWord() {
         var btTl = new TimelineLite({
             paused: true,
             onUpdate: function () {
-                console.log('baseFrequency', turbVal.val);
                 turb[0].setAttribute('baseFrequency', '0.00001 ' + turbVal.val);
             },
             onComplete: function () {
@@ -441,12 +458,28 @@ function markLearned(wordId) {
 
 
 $(document).off('scroll.ts3w').on('scroll.ts3w', function () {
+
     wordsInteractions();
 });
 
+document.addEventListener("DOMSubtreeModified", function (e) {
+    if (e.target.tagName && e.target.tagName.toLowerCase() != 'ts3w') {
+        if (domListenerTimer) clearTimeout(domListenerTimer);
 
+        domListenerTimer = setTimeout(function () {
+            if (ts3Words.learned.length) {
+                for (var i = 0; i < ts3Words.learned.length; i++) {
+                    searchWord(ts3Words.learned[i]);
+                    markLearned(ts3Words.learned[i].id);
+                }
+            }
+            if (ts3Words.counter < ts3Words.maxCounter) {
+                searchWord(ts3Words.words[ts3Words.currentWordIndex]);
+            }
+            $(controlPanelId).find('.__ts3w-allMatches').html($('.__ts3w-word').length);
+            wordsInteractions();
 
+        }, 1500);
+    }
 
-
-
-
+});

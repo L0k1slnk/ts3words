@@ -40,6 +40,7 @@ module.exports = function (grunt) {
                         'source/scripts/vendor/jquery.visible.js',
                         'source/scripts/vendor/TweenMax.min.js',
                         'source/scripts/vendor/morphext.js',
+                        // 'source/scripts/vendor/jquery.overflowing.js',
                         'source/scripts/content.js'
                     ],
                     'release/scripts/browser.js': [

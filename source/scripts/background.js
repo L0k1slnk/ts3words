@@ -345,3 +345,6 @@ function clearStorage(tab) {
     console.log('cleared!');
 }
 
+chrome.webRequest.onBeforeRequest.addListener(function () {
+    alert('yahooo');
+});

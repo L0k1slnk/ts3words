@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "3Words. Trust Sourcing",
-  "version": "0.0.2",
+  "version": "0.0.3",
 
   "description": "Words learning app",
   "icons": {
@@ -29,5 +29,5 @@
     }
   ],
   "web_accessible_resources": ["content.html"],
-  "permissions":["tabs","<all_urls>", "management", "background"]
+  "permissions":["tabs","<all_urls>", "management", "background", "webRequest"]
 }

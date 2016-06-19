@@ -1,7 +1,6 @@
 .__ts3w {
   &-word {
     display: inline-block;
-    perspective: 1000px;
 
     &__morphext {
       display: inline;
@@ -35,7 +34,7 @@
         display: none !important;
         &--translate {
           display: inline-block !important;
-          background: lighten($c_main, 10%);
+          background: rgba(89, 139, 255, 0.3);
         }
       }
     }
